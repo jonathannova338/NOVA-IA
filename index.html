@@ -10,17 +10,104 @@ background-color: #0a0a0a;
 color: #ffffff;
 font-family: Arial, sans-serif;
 text-align: center;
-padding: 50px;
+padding: 30px;
 }
 h1 {
 color: #d4af37;
-font-size: 50px;
+font-size: 45px;
+}
+#chat {
+max-width: 400px;
+margin: 20px auto;
+background-color: #1a1a1a;
+border-radius: 15px;
+padding: 20px;
+text-align: left;
+}
+#messages {
+height: 300px;
+overflow-y: auto;
+margin-bottom: 15px;
+padding: 10px;
+}
+.msg-user {
+color: #d4af37;
+margin: 10px 0;
+}
+.msg-nova {
+color: #ffffff;
+margin: 10px 0;
+}
+input {
+width: 80%;
+padding: 12px;
+border-radius: 25px;
+border: 1px solid #d4af37;
+background-color: #0a0a0a;
+color: #ffffff;
+font-size: 16px;
+}
+button {
+padding: 12px 20px;
+border-radius: 25px;
+border: none;
+background-color: #d4af37;
+color: #0a0a0a;
+font-weight: bold;
+font-size: 16px;
+margin-left: 5px;
 }
 </style>
 </head>
 <body>
 <h1>✨ NOVA IA ✨</h1>
-<p>Una IA gratuita que ayuda a los niños a estudiar.</p>
-<p>📚 Próximamente...</p>
+<p>Tu asistente para estudiar</p>
+
+<div id="chat">
+<div id="messages">
+<div class="msg-nova">🤖 ¡Hola! Soy NOVA IA. ¿En qué te ayudo?</div>
+</div>
+<input type="text" id="userInput" placeholder="Escribe tu pregunta...">
+<button onclick="sendMessage()">Enviar</button>
+</div>
+
+<script>
+async function sendMessage() {
+const input = document.getElementById('userInput');
+const texto = input.value;
+if (texto === '') return;
+
+const messages = document.getElementById('messages');
+messages.innerHTML += '<div class="msg-user">👤 ' + texto + '</div>';
+input.value = '';
+
+const respuesta = await llamarIA(texto);
+messages.innerHTML += '<div class="msg-nova">🤖 ' + respuesta + '</div>';
+messages.scrollTop = messages.scrollHeight;
+}
+
+async function llamarIA(texto) {
+const API_KEY = 'AQUÍ_VA_TU_API_KEY';
+const url = 'https://api.groq.com/openai/v1/chat/completions';
+
+const response = await fetch(url, {
+method: 'POST',
+headers: {
+'Authorization': 'Bearer ' + API_KEY,
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({
+model: 'llama-3.1-8b-instant',
+messages: [
+{ role: 'system', content: 'Eres NOVA IA, ayudas a niños a estudiar. Responde en español, amable y claro.' },
+{ role: 'user', content: texto }
+]
+})
+});
+
+const data = await response.json();
+return data.choices[0].message.content;
+}
+</script>
 </body>
-</html 
+</html>
